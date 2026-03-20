@@ -82,7 +82,7 @@ export default function ManageAgentsPage() {
         if (agentToDelete) {
             console.debug("filter", agents.filter(a => a.id !== agentToDelete.id))
             const res = await deleteAgent(agentToDelete.id);
-            if (res) await setAgents(agents.filter(a => a.id !== agentToDelete.id));
+            if (res) setAgents(agents.filter(a => a.id !== agentToDelete.id));
         }
         setIsDeleteDialogOpen(false);
         setAgentToDelete(null);

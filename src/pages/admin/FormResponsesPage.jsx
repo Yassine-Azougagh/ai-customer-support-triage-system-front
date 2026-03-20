@@ -17,7 +17,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { getTickets } from "@/services/ticket.service";
+import { deleteTicket, getTickets } from "@/services/ticket.service";
 import { Check, Delete, MoreHorizontalIcon, Plus, View } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -101,21 +101,23 @@ export default function AdminResponsesPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        getTicketHandler();
         setInterval(() => {
-            getTickets().then(data => {
-                const priorities = ["Low", "Medium", "Urgent"];
-                const categories = ["Technical", "Billing", "General"];
-                const agents = ["Alice", "Bob", "Unassigned"];
-                const enriched = data.map((res, i) => ({
-                    ...res,
-                    priority: priorities[i % 3],
-                    category: categories[i % 3],
-                    agent: agents[i % 3],
-                }));
-                setResponses(enriched);
-            });
+            getTicketHandler();
         }, 60000);
     }, []);
+
+    const getTicketHandler = () => {
+        getTickets().then(data => {
+            const enriched = data.map((res, i) => ({
+                ...res,
+                priority: res.priority || "Low",
+                category: res.category || "General",
+                agent: res.agent || "Unassigned"
+            }));
+            setResponses(enriched);
+        });
+    }
 
     const filteredResponses = responses.filter(res => {
         if (statusFilter !== "ALL" && res.status !== statusFilter) return false;
@@ -211,7 +213,7 @@ export default function AdminResponsesPage() {
                                         <>
                                             <DropdownMenuSeparator />
 
-                                            <DropdownMenuItem variant="destructive">
+                                            <DropdownMenuItem variant="destructive" onClick={() => deleteTicket(response.id)}>
                                                 <Delete /> Delete
                                             </DropdownMenuItem>
                                         </>

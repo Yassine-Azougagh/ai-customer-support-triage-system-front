@@ -93,7 +93,6 @@ const tableData = [
 export default function FormResponseView() {
   const [responses, setResponses] = useState([]);
   const [ticketInfo, setTicketInfo] = useState(null);
-  const [aiReply, setAiReply] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -101,7 +100,6 @@ export default function FormResponseView() {
     getTicketById(id).then(data => {
       setTicketInfo(data);
     });
-    setAiReply("Hello Sarah,\n\nI apologize for the confusion regarding your billing this month. I've looked into your account and I can see the double charge. I have processed a refund for the duplicate amount immediately, which should appear on your statement in 3-5 business days. \n\nPlease let me know if there's anything else I can help with.\n\nBest regards,\nAgent James R.\nCustomer Support");
   }, [id]);
 
 
@@ -135,8 +133,8 @@ export default function FormResponseView() {
           <h2 className="text-xl font-semibold">AI Suggested Reply</h2>
         </div>
         <Textarea
-          value={aiReply}
-          onChange={(e) => setAiReply(e.target.value)}
+          value={ticketInfo?.suggeestedResponse || ""}
+          readOnly
           className="min-h-[150px] bg-white text-base shadow-inner border-gray-300"
         />
         <div className="flex justify-end gap-2 mt-4">
