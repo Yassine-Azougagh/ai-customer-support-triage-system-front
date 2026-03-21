@@ -18,7 +18,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { deleteTicket, getTickets } from "@/services/ticket.service";
-import { Check, Delete, MoreHorizontalIcon, Plus, View } from "lucide-react";
+import { Check, Delete, MoreHorizontalIcon, Plus, Stamp, UserRoundCheck, View } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -208,9 +208,10 @@ export default function AdminResponsesPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => navigate("/agent/tickets/" + response.id)}><View /> View</DropdownMenuItem>
-                                    {response.status === 'SUBMITTED' && <DropdownMenuItem><Check /> Validate</DropdownMenuItem>}
-                                    {response.status === 'DRAFT' &&
+                                    {response.status === 'ASSIGNED' && <DropdownMenuItem><Stamp /> CLOSE</DropdownMenuItem>}
+                                    {response.status === 'OPEN' &&
                                         <>
+                                            <DropdownMenuItem><UserRoundCheck /> Assign</DropdownMenuItem>
                                             <DropdownMenuSeparator />
 
                                             <DropdownMenuItem variant="destructive" onClick={() => deleteTicket(response.id)}>
