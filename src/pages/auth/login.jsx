@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import CUSTOM_LOGO from '/icon.png';
+import { toast, Toaster } from "sonner";
 const formSchema = z.object({
   username: z.email(),
   password: z.string().min(8, "Password must be at least 8 characters long"),
@@ -38,6 +39,13 @@ const Login = () => {
 
     const res = await login(data.username, data.password)
 
+    console.log("login response : ", res);
+
+    if (!res.success) {
+      toast.error(res.message, { style: { 'color': 'red', 'background-color': 'white' } })
+      return
+    }
+
     const user = getCurrentUser()
 
     console.debug("user : ", user)
@@ -50,6 +58,8 @@ const Login = () => {
     } else if (user.role === 'AGENT') {
       navigate("/agent/tickets")
     }
+
+
 
   };
 
@@ -112,6 +122,7 @@ const Login = () => {
           <img src="/images/panel.jpg" alt="panel" className="h-full" />
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

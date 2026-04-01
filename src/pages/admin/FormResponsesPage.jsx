@@ -7,6 +7,10 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -17,7 +21,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { deleteTicket, getTickets } from "@/services/ticket.service";
+import { deleteTicket, getTickets, assignTicketToTeamLead, closeTicket } from "@/services/ticket.service";
+import teamLeaders from "@/data/teamLeaders.json";
 import { Check, Delete, MoreHorizontalIcon, Plus, Stamp, UserRoundCheck, View } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -119,6 +124,24 @@ export default function AdminResponsesPage() {
         });
     }
 
+    const handleAssignToLead = async (id, email) => {
+        try {
+            await assignTicketToTeamLead(id, email);
+            getTicketHandler();
+        } catch (error) {
+            console.error("Failed to assign ticket:", error);
+        }
+    };
+
+    const handleCloseTicket = async (id) => {
+        try {
+            await closeTicket(id);
+            getTicketHandler();
+        } catch (error) {
+            console.error("Failed to close ticket:", error);
+        }
+    };
+
     const filteredResponses = responses.filter(res => {
         if (statusFilter !== "ALL" && res.status !== statusFilter) return false;
         if (categoryFilter !== "ALL" && res.category !== categoryFilter) return false;
@@ -208,10 +231,23 @@ export default function AdminResponsesPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => navigate("/agent/tickets/" + response.id)}><View /> View</DropdownMenuItem>
-                                    {response.status === 'ASSIGNED' && <DropdownMenuItem><Stamp /> CLOSE</DropdownMenuItem>}
+                                    {response.status === 'ASSIGNED' && <DropdownMenuItem onClick={() => handleCloseTicket(response.id)}><Stamp className="mr-2 h-4 w-4" /> CLOSE</DropdownMenuItem>}
                                     {response.status === 'OPEN' &&
                                         <>
-                                            <DropdownMenuItem><UserRoundCheck /> Assign</DropdownMenuItem>
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger>
+                                                    <UserRoundCheck className="mr-2 h-4 w-4" /> Assign
+                                                </DropdownMenuSubTrigger>
+                                                <DropdownMenuPortal>
+                                                    <DropdownMenuSubContent>
+                                                        {teamLeaders.map((leader) => (
+                                                            <DropdownMenuItem key={leader.email} onClick={() => handleAssignToLead(response.id, leader.email)}>
+                                                                {leader.name} ({leader.email})
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuSubContent>
+                                                </DropdownMenuPortal>
+                                            </DropdownMenuSub>
                                             <DropdownMenuSeparator />
 
                                             <DropdownMenuItem variant="destructive" onClick={() => deleteTicket(response.id)}>

@@ -6,19 +6,25 @@ import api from "./api";
  * Calls /auth/login and stores JWT + user info
  */
 export const login = async (username, password) => {
-  const res = await api.post("/auth/login", {
-    username,
-    password
-  });
+  try {
+    const res = await api.post("/auth/login", {
+      username,
+      password
+    });
 
-  const { token } = res.data;
 
-  if (token) {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(decodeToken(token)));
+    const { token } = res.data;
+
+    if (token) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(decodeToken(token)));
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Login failed test", error.response.data);
+    return error.response.data;
   }
-
-  return res.data;
 };
 /**
  * Sign up user
@@ -62,8 +68,8 @@ export const isAuthenticated = () => {
 
   console.log("inside is authentificated ");
   console.log("is auth : ", payload.exp > now);
-  
-  
+
+
   return payload.exp > now;
 };
 
@@ -71,7 +77,7 @@ export const isAuthenticated = () => {
  * Get current user info from token
  */
 export const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem("user"))
+  return JSON.parse(localStorage.getItem("user"))
 };
 
 /**

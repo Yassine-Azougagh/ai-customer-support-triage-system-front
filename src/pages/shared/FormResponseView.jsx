@@ -116,7 +116,7 @@ export default function FormResponseView() {
   const handleSendReply = async () => {
     try {
       // isAiDraftUsed is true if they haven't changed the suggested response
-      const isAiDraftUsed = !isInputChanged; 
+      const isAiDraftUsed = !isInputChanged;
       await sendTicketReply(id, {
         msg: replyMessage,
         isAiDraftUsed
@@ -164,10 +164,10 @@ export default function FormResponseView() {
           className="min-h-[150px] bg-white text-base shadow-inner border-gray-300"
         />
         <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+          {/* <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
             <Sparkles className="size-4 mr-2" /> Regenerate
-          </Button>
-          <Button 
+          </Button> */}
+          <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSendReply}
             disabled={!replyMessage.trim()}

@@ -28,3 +28,13 @@ export const sendTicketReply = async (id, data) => {
     const res = await api.post(`/tickets/reply/${id}`, data);
     return res.data;
 };
+
+export const assignTicketToTeamLead = async (id, email) => {
+    const res = await api.post(`/tickets/${id}/assign`, null, { params: { email } });
+    return res.data;
+};
+
+export const closeTicket = async (id) => {
+    const res = await api.post(`/tickets/close/${id}`);
+    return res.data;
+};

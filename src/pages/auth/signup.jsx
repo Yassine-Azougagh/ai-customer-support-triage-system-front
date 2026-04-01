@@ -55,7 +55,7 @@ const Signup = () => {
 
       navigate("/login", { replace: true })
     } else {
-      toast.error(res.message, { style: { 'color': 'red' } })
+      toast.error(res.message, { style: { 'color': 'red', 'background-color': 'white' } })
     }
   };
 
