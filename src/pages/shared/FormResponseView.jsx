@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { getTicketById } from "@/services/ticket.service";
+import { getTicketById, sendTicketReply } from "@/services/ticket.service";
 import { MoreHorizontalIcon, Send, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -96,11 +96,36 @@ export default function FormResponseView() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [replyMessage, setReplyMessage] = useState("");
+  const [isInputChanged, setIsInputChanged] = useState(false);
+
   useEffect(() => {
     getTicketById(id).then(data => {
       setTicketInfo(data);
+      if (data?.suggeestedResponse) {
+        setReplyMessage(data.suggeestedResponse);
+      }
     });
   }, [id]);
+
+  const handleReplyChange = (e) => {
+    setReplyMessage(e.target.value);
+    setIsInputChanged(true);
+  };
+
+  const handleSendReply = async () => {
+    try {
+      // isAiDraftUsed is true if they haven't changed the suggested response
+      const isAiDraftUsed = !isInputChanged; 
+      await sendTicketReply(id, {
+        msg: replyMessage,
+        isAiDraftUsed
+      });
+      // Optionally handle success
+    } catch (error) {
+      console.error("Failed to send reply:", error);
+    }
+  };
 
 
   return (
@@ -133,15 +158,20 @@ export default function FormResponseView() {
           <h2 className="text-xl font-semibold">AI Suggested Reply</h2>
         </div>
         <Textarea
-          value={ticketInfo?.suggeestedResponse || ""}
-          readOnly
+          value={replyMessage}
+          onChange={handleReplyChange}
+          placeholder="Type your reply here..."
           className="min-h-[150px] bg-white text-base shadow-inner border-gray-300"
         />
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
             <Sparkles className="size-4 mr-2" /> Regenerate
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleSendReply}
+            disabled={!replyMessage.trim()}
+          >
             <Send className="size-4 mr-2" /> Send Reply
           </Button>
         </div>

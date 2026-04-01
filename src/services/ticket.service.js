@@ -23,3 +23,8 @@ export const updateTicket = async (id, ticket) => {
 export const deleteTicket = async (id) => {
     await api.delete(`/tickets/${id}`);
 };
+
+export const sendTicketReply = async (id, data) => {
+    const res = await api.post(`/tickets/reply/${id}`, data);
+    return res.data;
+};
